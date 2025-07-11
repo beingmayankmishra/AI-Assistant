@@ -1,155 +1,174 @@
-/* Main Container */
-.assistant-container {
-  display: flex;
-  height: 80vh;
+/* 2025 Modern AI Assistant Styles */
+.modern-ai-assistant {
+  --primary: #6366f1;
+  --secondary: #8b5cf6;
+  --accent: #ec4899;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #1e293b;
+  --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  --border-radius: 24px;
+  
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 20px;
   max-width: 1200px;
-  margin: 20px auto;
-  background: #f8f9fa;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
+  height: 80vh;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
 }
 
-/* Avatar Container (Left - 40%) */
+/* Avatar Container */
 .avatar-container {
-  width: 40%;
-  background: linear-gradient(135deg, #2c3e50, #3498db);
+  grid-column: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px;
+  background: var(--card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.avatar {
-  width: 250px;
-  height: 250px;
-  background: #ecf0f1;
-  border-radius: 50%;
-  position: relative;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+.avatar-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: all 0.3s ease;
 }
 
-/* Professional Avatar Face */
-.avatar-face {
-  position: absolute;
-  width: 70%;
-  height: 70%;
-  top: 15%;
-  left: 15%;
-}
-
-/* Realistic Eyes */
-.avatar-eyes {
-  display: flex;
-  justify-content: space-between;
-  width: 60%;
-  margin: 25% auto 0;
-}
-
-.avatar-eye {
-  width: 30px;
-  height: 20px;
-  background: #2c3e50;
-  border-radius: 50%;
-  position: relative;
-  animation: blink 6s infinite;
-}
-
-@keyframes blink {
-  0%, 48%, 52%, 100% { height: 20px; }
-  50% { height: 5px; }
-}
-
-/* Natural Mouth */
-.avatar-mouth {
-  width: 50px;
-  height: 10px;
-  background: #e74c3c;
-  border-radius: 0 0 25px 25px;
-  margin: 30px auto 0;
-  transition: all 0.2s;
-}
-
-.avatar.talking .avatar-mouth {
-  animation: talk 0.3s infinite alternate;
-}
-
-@keyframes talk {
-  0% { height: 10px; border-radius: 0 0 25px 25px; }
-  100% { height: 5px; border-radius: 0 0 15px 15px; }
-}
-
-/* Chat Container (Right - 60%) */
+/* Chat Container */
 .chat-container {
-  width: 60%;
-  padding: 25px;
-  overflow-y: auto;
-  background: white;
+  grid-column: 2;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  background: var(--card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-/* Modern Mic Button */
-.controls-container {
+.chat-header {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.voice-indicator {
+  display: flex;
+  gap: 6px;
+}
+
+.voice-indicator span {
+  width: 6px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  transform: scaleY(0.5);
+  transition: transform 0.3s ease;
+}
+
+.voice-indicator.active span {
+  animation: voice-wave 1s infinite ease-in-out;
+}
+
+.voice-indicator.active span:nth-child(1) { animation-delay: 0s }
+.voice-indicator.active span:nth-child(2) { animation-delay: 0.2s }
+.voice-indicator.active span:nth-child(3) { animation-delay: 0.4s }
+
+@keyframes voice-wave {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1); }
+}
+
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+/* Mic Button */
+.mic-container {
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-}
-
-.mic-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s;
   z-index: 10;
 }
 
-.mic-button.listening {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
+.mic-button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.mic-button.active {
   transform: scale(1.1);
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+}
+
+.mic-icon {
+  width: 30px;
+  height: 30px;
+  background: white;
+  mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 15C13.6569 15 15 13.6569 15 12V6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6V12C9 13.6569 10.3431 15 12 15Z' fill='currentColor'/%3E%3Cpath d='M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12M12 19V21M5 21H19' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
 }
 
 .pulse-ring {
   position: absolute;
-  width: 80px;
-  height: 80px;
-  border: 3px solid #e74c3c;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--primary);
   border-radius: 50%;
-  animation: pulse 1.5s infinite;
   opacity: 0;
 }
 
+.mic-button.active .pulse-ring {
+  animation: pulse 2s infinite;
+}
+
 @keyframes pulse {
-  0% { transform: scale(0.8); opacity: 0.7; }
-  70% { transform: scale(1.3); opacity: 0; }
-  100% { transform: scale(0.8); opacity: 0; }
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .assistant-container {
-    flex-direction: column;
+  .modern-ai-assistant {
+    grid-template-columns: 1fr;
+    grid-template-rows: 200px 1fr auto;
     height: 90vh;
+    padding: 10px;
   }
   
-  .avatar-container, .chat-container {
-    width: 100%;
+  .avatar-container {
+    grid-column: 1;
+    grid-row: 1;
+    height: 200px;
   }
   
-  .avatar {
-    width: 150px;
-    height: 150px;
+  .chat-container {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .mic-container {
+    bottom: 20px;
   }
 }

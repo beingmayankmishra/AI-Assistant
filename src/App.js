@@ -5,7 +5,7 @@ import './App.css';
 function App() {
   return (
     <div className="app">
-      <h1>Virtual AI Assistant</h1>
+      <h1></h1>
       <Assistant />
     </div>
   );
