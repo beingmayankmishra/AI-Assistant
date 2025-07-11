@@ -1,7 +1,7 @@
-/* 2025 Modern AI Assistant Styles */
-.modern-ai-assistant {
-  --primary: #6366f1;
-  --secondary: #8b5cf6;
+/* 2025 Modern Design System */
+.pooja-assistant {
+  --primary: #7c3aed;
+  --secondary: #a855f7;
   --accent: #ec4899;
   --bg: #f8fafc;
   --card: #ffffff;
@@ -9,128 +9,160 @@
   --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   --border-radius: 24px;
   
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  grid-template-rows: 1fr auto;
-  gap: 20px;
-  max-width: 1200px;
-  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  height: 90vh;
   margin: 0 auto;
-  padding: 20px;
+  background: var(--bg);
   position: relative;
+  overflow: hidden;
 }
 
-/* Avatar Container */
-.avatar-container {
-  grid-column: 1;
+/* Modern Header */
+.assistant-header {
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: var(--card);
-  border-radius: var(--border-radius);
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  position: relative;
   box-shadow: var(--shadow);
+}
+
+.assistant-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.voice-animation {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  right: 2rem;
+}
+
+.voice-animation span {
+  width: 8px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  transform: scaleY(0.6);
+  transition: transform 0.3s ease;
+}
+
+.voice-animation.active span {
+  animation: voice-wave 1.2s infinite ease-in-out;
+}
+
+.voice-animation.active span:nth-child(1) { animation-delay: 0s }
+.voice-animation.active span:nth-child(2) { animation-delay: 0.2s }
+.voice-animation.active span:nth-child(3) { animation-delay: 0.4s }
+
+@keyframes voice-wave {
+  0%, 100% { transform: scaleY(0.6); }
+  50% { transform: scaleY(1.2); }
+}
+
+/* Main Container */
+.assistant-container {
+  display: flex;
+  flex: 1;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+/* Avatar Section (Larger) */
+.avatar-section {
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--card);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .avatar-gif {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   transition: all 0.3s ease;
 }
 
-/* Chat Container */
-.chat-container {
-  grid-column: 2;
+/* Chat Section (Compact) */
+.chat-section {
+  width: 55%;
   display: flex;
   flex-direction: column;
+}
+
+.chat-container {
+  flex: 1;
   background: var(--card);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.chat-header {
-  padding: 16px 24px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.voice-indicator {
-  display: flex;
-  gap: 6px;
-}
-
-.voice-indicator span {
-  width: 6px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 3px;
-  transform: scaleY(0.5);
-  transition: transform 0.3s ease;
-}
-
-.voice-indicator.active span {
-  animation: voice-wave 1s infinite ease-in-out;
-}
-
-.voice-indicator.active span:nth-child(1) { animation-delay: 0s }
-.voice-indicator.active span:nth-child(2) { animation-delay: 0.2s }
-.voice-indicator.active span:nth-child(3) { animation-delay: 0.4s }
-
-@keyframes voice-wave {
-  0%, 100% { transform: scaleY(0.5); }
-  50% { transform: scaleY(1); }
-}
-
-.messages {
-  flex: 1;
-  padding: 20px;
+  padding: 1.5rem;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--primary) transparent;
+  box-shadow: var(--shadow);
 }
 
-/* Mic Button */
+/* Modern Mic Button */
 .mic-container {
   position: absolute;
-  bottom: 40px;
+  bottom: 2.5rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
 }
 
 .mic-button {
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   border: none;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.5);
   transition: all 0.3s ease;
   position: relative;
 }
 
-.mic-button.active {
+.mic-button.listening {
   transform: scale(1.1);
   background: linear-gradient(135deg, var(--accent), var(--secondary));
 }
 
 .mic-icon {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+
+.mic-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
   background: white;
   mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 15C13.6569 15 15 13.6569 15 12V6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6V12C9 13.6569 10.3431 15 12 15Z' fill='currentColor'/%3E%3Cpath d='M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12M12 19V21M5 21H19' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
 }
 
-.pulse-ring {
+.pulse-effect {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -139,8 +171,8 @@
   opacity: 0;
 }
 
-.mic-button.active .pulse-ring {
-  animation: pulse 2s infinite;
+.mic-button.listening .pulse-effect {
+  animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
@@ -149,26 +181,42 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .modern-ai-assistant {
-    grid-template-columns: 1fr;
-    grid-template-rows: 200px 1fr auto;
-    height: 90vh;
-    padding: 10px;
+@media (max-width: 1024px) {
+  .assistant-container {
+    flex-direction: column;
+    padding: 1rem;
   }
   
-  .avatar-container {
-    grid-column: 1;
-    grid-row: 1;
-    height: 200px;
+  .avatar-section,
+  .chat-section {
+    width: 100%;
+    height: auto;
   }
   
-  .chat-container {
-    grid-column: 1;
-    grid-row: 2;
+  .avatar-section {
+    height: 300px;
   }
   
-  .mic-container {
-    bottom: 20px;
+  .chat-section {
+    flex: 1;
+  }
+  
+  .assistant-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .pooja-assistant {
+    height: 100vh;
+  }
+  
+  .avatar-section {
+    height: 250px;
+  }
+  
+  .mic-button {
+    width: 70px;
+    height: 70px;
   }
 }

@@ -14,43 +14,47 @@ const Assistant = () => {
 
   // Refs
   const recognitionRef = useRef(null);
-  const synthRef = useRef(window.speechSynthesis);
+  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
   const chatContainerRef = useRef(null);
 
   // GIF Paths
-  const SPEAKING_GIF = '/assets/pooja.gif'; // Your female avatar GIF
-  const IDLE_GIF = '/assets/pooja.gif'; // Same or different idle state
+  const SPEAKING_GIF = '/assets/pooja.gif';
+  const LISTENING_GIF = '/assets/pooja.gif'; 
+  const IDLE_GIF = '/assets/pooja.gif';
 
   // Add message helper
   const addMessage = (sender, text) => {
     setMessages(prev => [...prev, { sender, text }]);
   };
 
-  // Smooth scroll
+  // Smooth scroll with no flickering
   useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (!chatContainer) return;
+
     const observer = new MutationObserver(() => {
-      chatContainerRef.current?.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
+      chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
         behavior: 'smooth'
       });
     });
-    observer.observe(chatContainerRef.current, { childList: true });
+
+    observer.observe(chatContainer, { childList: true });
     return () => observer.disconnect();
   }, []);
 
-  // Load voices and initialize
+  // Load voices
   useEffect(() => {
+    if (!synthRef.current) return;
+
     const handleVoicesChanged = () => {
       const voices = synthRef.current.getVoices();
       if (voices.length > 0) {
         setVoicesReady(true);
-        console.log('Available voices:', voices);
       }
     };
 
     synthRef.current.addEventListener('voiceschanged', handleVoicesChanged);
-    
-    // Initial check
     handleVoicesChanged();
 
     return () => {
@@ -60,8 +64,7 @@ const Assistant = () => {
 
   // Indian female voice with guaranteed output
   const speak = useCallback((text, lang = 'en') => {
-    if (!voicesReady) {
-      console.log('Voices not ready, retrying...');
+    if (!voicesReady || !synthRef.current) {
       setTimeout(() => speak(text, lang), 200);
       return;
     }
@@ -85,10 +88,10 @@ const Assistant = () => {
       'Priya'
     ];
 
-   const indianFemaleVoice = voices.find(v => 
-  preferredVoices.some(name => v.name.includes(name)) ||
-  (v.lang.includes('IN') && (v.name.includes('Female') || v.gender === 'female'))
-);
+    const indianFemaleVoice = voices.find(v => 
+      preferredVoices.some(name => v.name.includes(name)) ||
+      (v.lang.includes('IN') && (v.name.includes('Female') || v.gender === 'female'))
+    );
 
     if (indianFemaleVoice) {
       utterance.voice = indianFemaleVoice;
@@ -99,6 +102,10 @@ const Assistant = () => {
 
     utterance.onstart = () => setIsAssistantSpeaking(true);
     utterance.onend = () => setIsAssistantSpeaking(false);
+    utterance.onerror = (e) => {
+      console.error('Speech error:', e);
+      setIsAssistantSpeaking(false);
+    };
 
     synthRef.current.speak(utterance);
     addMessage('assistant', text);
@@ -108,30 +115,45 @@ const Assistant = () => {
   useEffect(() => {
     if (!voicesReady) return;
 
-    // Initialize speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.lang = 'en-IN';
       recognitionRef.current.interimResults = false;
+      recognitionRef.current.continuous = false; // Important: Only listen for single utterance
 
       recognitionRef.current.onresult = (e) => {
-        const transcript = e.results[0][0].transcript;
-        handleUserInput(transcript);
+        const transcript = e.results[0][0].transcript.trim();
+        if (transcript) {
+          handleUserInput(transcript);
+        }
+        setIsListening(false);
       };
 
       recognitionRef.current.onerror = (e) => {
         console.error('Recognition error:', e.error);
         setIsListening(false);
       };
+
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          // Only restart if we're still supposed to be listening
+          recognitionRef.current.start();
+        }
+      };
     }
 
     // Initial greeting after 1 second
     const greetingTimer = setTimeout(() => {
-      speak("Hello! I'm your AI assistant. How can I help you today?");
+      speak("Hello! I'm Pooja, your virtual assistant. How can I help you today?");
     }, 1000);
 
-    return () => clearTimeout(greetingTimer);
+    return () => {
+      clearTimeout(greetingTimer);
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
   }, [voicesReady, speak]);
 
   // Handle user input
@@ -160,6 +182,9 @@ const Assistant = () => {
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
+      // Clear any previous listening message
+      setMessages(prev => prev.filter(msg => msg.text !== '...listening...'));
+      
       recognitionRef.current.start();
       setIsListening(true);
       addMessage('user', '...listening...');
@@ -167,38 +192,59 @@ const Assistant = () => {
   };
 
   return (
-    <div className="modern-ai-assistant">
-      {/* Left Side - 3D Avatar */}
-      <div className="avatar-container">
-        <img 
-          src={isAssistantSpeaking ? SPEAKING_GIF : IDLE_GIF}
-          alt="AI Assistant"
-          className="avatar-gif"
-        />
+    <div className="pooja-assistant">
+      {/* Header */}
+      <div className="assistant-header">
+        <h1>Pooja Virtual Assistant</h1>
+        <div className={`voice-animation ${isListening ? 'active' : ''}`}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </div>
 
-      {/* Right Side - Chat */}
-      <div className="chat-container" ref={chatContainerRef}>
-        <div className="messages">
-          {messages.map((message, index) => (
-            <ChatBubble 
-              key={index}
-              sender={message.sender}
-              text={message.text}
+      {/* Main Content */}
+      <div className="assistant-container">
+        {/* Left Side - Larger Avatar */}
+        <div className="avatar-section">
+          <div className="avatar-wrapper">
+            <img 
+              src={
+                isAssistantSpeaking ? SPEAKING_GIF :
+                isListening ? LISTENING_GIF :
+                IDLE_GIF
+              }
+              alt="Pooja Virtual Assistant"
+              className="avatar-gif"
             />
-          ))}
+          </div>
+        </div>
+
+        {/* Right Side - Compact Chat */}
+        <div className="chat-section">
+          <div className="chat-container" ref={chatContainerRef}>
+            {messages.map((message, index) => (
+              <ChatBubble 
+                key={index}
+                sender={message.sender}
+                text={message.text}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Center Mic Button */}
       <div className="mic-container">
         <button 
-          className={`mic-button ${isListening ? 'active' : ''}`}
+          className={`mic-button ${isListening ? 'listening' : ''}`}
           onClick={toggleListening}
           disabled={isAssistantSpeaking}
         >
-          <div className="mic-icon"></div>
-          <div className="pulse-ring"></div>
+          <div className="mic-icon">
+            <div className="mic-lines"></div>
+          </div>
+          <div className="pulse-effect"></div>
         </button>
       </div>
 
@@ -207,7 +253,7 @@ const Assistant = () => {
         <RegistrationForm 
           onComplete={() => {
             setShowRegistration(false);
-            speak("Thank you for registering!");
+            speak("Thank you for registering with us!");
           }}
           onClose={() => setShowRegistration(false)}
         />
